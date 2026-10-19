@@ -3,20 +3,33 @@ const {LESSONS,QUESTIONS,SOURCES,TEC_INDEX,PROGRAM}=window.TRILHA;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key='trilha-ti-v1';
-const emptyState=()=>({version:1,completed:[],attempts:[],notes:{},days:{},tec:[]});
-let state=emptyState(),storageOK=true;
+const emptyState=()=>({version:1,updatedAt:0,completed:[],attempts:[],notes:{},days:{},tec:[]});
+let state=emptyState(),storageOK=true,cloudReady=false,syncTimer=null,syncing=false;
 try{const raw=localStorage.getItem(key);if(raw)state=validate(JSON.parse(raw));}catch(e){storageOK=false;}
 function validate(v){
  if(!v||v.version!==1||!Array.isArray(v.completed)||!Array.isArray(v.attempts)||typeof v.notes!=='object'||!v.notes||typeof v.days!=='object'||!v.days||!Array.isArray(v.tec))throw Error('Formato de backup inválido.');
  if(v.attempts.length>50000||v.tec.length>10000)throw Error('Backup acima do limite desta versão.');
- const out=emptyState();out.completed=[...new Set(v.completed.filter(x=>LESSONS.some(l=>l.id===x)))];
+ const out=emptyState();out.updatedAt=Number.isFinite(v.updatedAt)&&v.updatedAt>=0?v.updatedAt:0;out.completed=[...new Set(v.completed.filter(x=>LESSONS.some(l=>l.id===x)))];
  out.attempts=v.attempts.map(a=>{const q=QUESTIONS.find(q=>q.id===a.id);if(!q||!Number.isInteger(a.selected)||a.selected<0||a.selected>4||!Number.isFinite(a.time)||a.time<0||a.time>Date.now()+86400000||typeof a.guess!=='boolean')throw Error('Tentativa inválida.');return {id:a.id,selected:a.selected,correct:a.selected===q.correct,time:a.time,guess:a.guess};});
  for(const q of QUESTIONS)if(typeof v.notes[q.id]==='string')out.notes[q.id]=v.notes[q.id].slice(0,5000);
  for(const [k,d] of Object.entries(v.days)){if(!/^\d{4}-\d{2}-\d{2}$/.test(k)||!d||!Array.isArray(d.checks)||!LESSONS.some(l=>l.id===d.lesson))continue;out.days[k]={lesson:d.lesson,checks:[...new Set(d.checks.filter(x=>Number.isInteger(x)&&x>=0&&x<5))]};}
  out.tec=v.tec.map(x=>{if(typeof x.topic!=='string'||!Number.isInteger(x.total)||x.total<1||x.total>1000||!Number.isInteger(x.correct)||x.correct<0||x.correct>x.total||!Number.isFinite(x.time)||x.time<0||x.time>Date.now()+86400000)throw Error('Registro TEC inválido.');return{topic:x.topic.slice(0,160),total:x.total,correct:x.correct,time:x.time};});
  return out;
 }
-function save(){try{localStorage.setItem(key,JSON.stringify(state));return true;}catch(e){storageOK=false;toast('Não foi possível salvar. Exporte seu progresso antes de fechar.');return false;}}
+function syncStatus(text){const el=$('#sync-status');if(el)el.textContent=text;}
+async function syncNow(keepalive=false){
+ if(!cloudReady||syncing)return;syncing=true;clearTimeout(syncTimer);syncTimer=null;syncStatus('Salvando na nuvem…');
+ try{const r=await fetch('/api/progress',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({data:state,updatedAt:state.updatedAt}),keepalive});if(r.status===409){syncing=false;return loadCloud(true);}if(!r.ok)throw Error('HTTP '+r.status);syncStatus('Salvo na nuvem');}
+ catch(e){syncStatus('Pendente de sincronização');}finally{syncing=false;}
+}
+function scheduleSync(){clearTimeout(syncTimer);syncStatus('Salvando na nuvem…');syncTimer=setTimeout(()=>syncNow(),700);}
+async function loadCloud(force=false){
+ try{syncStatus('Conectando à nuvem…');const r=await fetch('/api/progress',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const remote=await r.json();
+  if(remote.data&&remote.updatedAt>state.updatedAt){state=validate(remote.data);state.updatedAt=remote.updatedAt;localStorage.setItem(key,JSON.stringify(state));cloudReady=true;render(false);syncStatus('Progresso carregado da nuvem');return;}
+  cloudReady=true;if(!remote.data||state.updatedAt>remote.updatedAt){if(!state.updatedAt)state.updatedAt=Date.now();localStorage.setItem(key,JSON.stringify(state));await syncNow();}else syncStatus('Sincronizado');
+ }catch(e){cloudReady=true;syncStatus('Somente neste dispositivo');if(force)toast('Não foi possível atualizar pela nuvem agora. O progresso continua salvo neste dispositivo.');}
+}
+function save(){try{if(cloudReady)state.updatedAt=Date.now();localStorage.setItem(key,JSON.stringify(state));if(cloudReady)scheduleSync();return true;}catch(e){storageOK=false;toast('Não foi possível salvar. Exporte seu progresso antes de fechar.');return false;}}
 function toast(s){$('#toast').textContent=s;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',4200);}
 function dateKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function day(){const k=dateKey();if(!state.days[k]){state.days[k]={lesson:(LESSONS.find(l=>!state.completed.includes(l.id))||LESSONS[0]).id,checks:[]};save();}return state.days[k];}
@@ -63,4 +76,7 @@ function bind(){
 }
 function render(scroll=true){const hash=location.hash.slice(1)||'inicio',path=hash.split('?')[0],tab=path.startsWith('aula/')?'trilha':path;$$('[data-nav]').forEach(a=>{a.classList.toggle('active',a.dataset.nav===tab);if(a.dataset.nav===tab)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});$('#review-count').textContent=due().length;$('#breadcrumb').textContent=({inicio:'Seu espaço de estudos',trilha:'Aprendizado / Sua trilha',questoes:'Prática / Banco autoral',revisoes:'Aprendizado / Revisões',tec:'Integrações / Caderno TEC',progresso:'Seu estudo / Progresso',sobre:'Sobre / Fontes e limites'})[tab]||'Aprendizado / Aula';answer=null;const html=path==='inicio'?home():path==='trilha'?trail():path.startsWith('aula/')?lesson(path.slice(5)):path==='questoes'?questions():path==='revisoes'?review():path==='tec'?tec():path==='progresso'?progress():path==='sobre'?about():notFound();$('#main').innerHTML=(!storageOK?'<div class="notice amber">Armazenamento indisponível ou dados inválidos. As alterações desta sessão podem não persistir. Exporte o progresso antes de fechar.</div>':'')+html;bind();if(scroll)window.scrollTo(0,0);}
 document.querySelector('.skip').addEventListener('click',e=>{e.preventDefault();document.querySelector('#main').focus();});
-window.addEventListener('hashchange',()=>{position=0;render();});render();
+window.addEventListener('hashchange',()=>{position=0;render();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloudReady)syncNow(true);});
+window.addEventListener('online',()=>loadCloud(true));
+render();loadCloud();

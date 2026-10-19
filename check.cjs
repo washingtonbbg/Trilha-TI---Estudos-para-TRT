@@ -1,9 +1,9 @@
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
 const store=new Map(),els=new Map();
 function el(s){if(!els.has(s))els.set(s,{innerHTML:'',textContent:'',style:{},dataset:{},setAttribute(){},removeAttribute(){},addEventListener(){}});return els.get(s);}
-const context=vm.createContext({window:{addEventListener(){},scrollTo(){}},document:{querySelector:el,querySelectorAll(){return[]}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},location:{hash:'#inicio'},console,Date,Set,Map,URLSearchParams,FormData:class{},setInterval,clearInterval,setTimeout,Blob,URL,confirm:()=>false});
-vm.runInContext(fs.readFileSync('dist/data.js','utf8'),context);
-vm.runInContext(fs.readFileSync('dist/app.js','utf8'),context);
+const context=vm.createContext({window:{addEventListener(){},scrollTo(){}},document:{querySelector:el,querySelectorAll(){return[]},addEventListener(){},visibilityState:'visible'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},location:{hash:'#inicio'},console,Date,Set,Map,URLSearchParams,FormData:class{},setInterval,clearInterval,setTimeout,Blob,URL,confirm:()=>false});
+vm.runInContext(fs.readFileSync('public/data.js','utf8'),context);
+vm.runInContext(fs.readFileSync('public/app.js','utf8'),context);
 const result=vm.runInContext(`(()=>{
  const check=(b,m)=>{if(!b)throw Error(m)};
  check(LESSONS.length===8,'8 aulas');check(QUESTIONS.length===24,'24 questões');check(new Set(QUESTIONS.map(q=>q.id)).size===24,'IDs únicos');
@@ -27,5 +27,5 @@ const result=vm.runInContext(`(()=>{
  for(const path of ['inicio','trilha','questoes','revisoes','tec','progresso','sobre','aula/logica','aula/inexistente']){location.hash='#'+path;render();check(document.querySelector('#main').innerHTML.length>100,'render '+path);}
  return {aulas:LESSONS.length,questoes:QUESTIONS.length,areasTEC:TEC_INDEX.length,verificacoes:'integridade, filtros, revisões, backup e rotas'};
 })()`,context);
-for(const f of ['index.html','style.css','data.js','app.js','programa-base.md','plano-estudos.md','analise-tec.md'])assert(fs.existsSync('dist/'+f),f+' existe');
+for(const f of ['style.css','data.js','app.js','programa-base.md','plano-estudos.md','analise-tec.md'])assert(fs.existsSync('public/'+f),f+' existe');
 console.log(JSON.stringify({status:'ok',...result}));

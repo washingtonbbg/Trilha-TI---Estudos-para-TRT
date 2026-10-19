@@ -4,9 +4,16 @@
 !.env.example
 .openai/
 **/.openai/
+!.openai/
+!.openai/hosting.json
 .sites-*/
 .sites-runtime/
 node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+.sites-runtime/
 trilha-ti-progresso-*.json
 *.tar.gz
 __pycache__/
