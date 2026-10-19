@@ -1,0 +1,14 @@
+# Dados locais, credenciais e metadados de hospedagem
+.env
+.env.*
+!.env.example
+.openai/
+**/.openai/
+.sites-*/
+.sites-runtime/
+node_modules/
+trilha-ti-progresso-*.json
+*.tar.gz
+__pycache__/
+.DS_Store
+Thumbs.db
