@@ -28,6 +28,7 @@ export default async function Home() {
         <footer>Trilha TI · Programa-base TRT8/FCC · Destino provisório: TRT23/MT <span>Progresso sincronizado com sua conta.</span></footer>
       </div>
       <div id="toast" role="status" aria-live="polite"></div>
+      <Script src="/tec-index.js" strategy="beforeInteractive" />
       <Script src="/data.js" strategy="beforeInteractive" />
       <Script src="/app.js" strategy="afterInteractive" />
     </>

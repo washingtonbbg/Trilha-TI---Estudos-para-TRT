@@ -40,7 +40,7 @@ q('D03','dados','Fundamento','Em uma amostra de 100 casos, há 95 negativos e 5 
 
 // Índice consultado na interface autenticada do caderno Q7ByxA em 18/10/2026.
 // Recorte analítico de grupos e assuntos, não cópia do banco nem índice integral do edital.
-const TEC_INDEX=[
+const TEC_INDEX_SUMMARY=[
 {name:'Banco de Dados',focus:'Banco de dados',groups:['Projeto e Modelagem de Dados','Linguagem SQL','SGBDs Relacionais','Outros Modelos de Bancos de Dados','Organização de Arquivos e Métodos de Acesso','Segurança em Banco de Dados','Administração de Banco de Dados'],extras:'SQL Server, bancos hierárquicos e espaciais: não priorizar automaticamente; conferir aderência ao edital.'},
 {name:'Ciência de Dados e Inteligência Artificial',focus:'Dados e IA',groups:['Fundamentos da Ciência de Dados','Bancos de Dados Dimensionais','Linguagens para Ciência de Dados','Inteligência Artificial'],extras:'R e ferramentas específicas não listadas não substituem os tópicos expressos do edital.'},
 {name:'Desenvolvimento de Sistemas',focus:'Programação',groups:['Algoritmos e Lógica de Programação','Linguagens de Programação','Desenvolvimento Web','Arquitetura de Aplicações','Plataforma Java EE','Frameworks','Web Services e APIs','Servidores de Aplicação','Mensageria'],extras:'O caderno também contém C, C#, Delphi, Ruby, Visual Basic e PHP. O programa-base destaca Python, Java, JavaScript e TypeScript.'},
@@ -65,5 +65,6 @@ const PROGRAM=[
 ['Direito e gerais','Planejado; programa disponível no documento','Constitucional, Administrativo, Português, RLM, legislação, Direitos Humanos e deficiência.'],
 ['Inglês técnico e redação','Planejado; programa disponível no documento','Interpretação de documentação e produção de texto. História/Geografia/leis de MT são complementos, não cobrança confirmada.']
 ];
-window.TRILHA={LESSONS,QUESTIONS,SOURCES,TEC_INDEX,PROGRAM};
+const TEC_INDEX=window.TEC_INDEX_DATA||{sourceUrl:'https://www.tecconcursos.com.br/questoes/cadernos/106372942',sourceLabel:'Índice do Caderno exportado pelo TEC Concursos',totalQuestions:0,areas:[]};
+window.TRILHA={LESSONS,QUESTIONS,SOURCES,TEC_INDEX,TEC_INDEX_SUMMARY,PROGRAM};
 })();

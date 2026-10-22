@@ -11,7 +11,7 @@ Plataforma de estudos de Tecnologia da Informação para quem está começando d
 - Revisões sugeridas: 1 dia para erros/palpites e 7 dias para acertos seguros.
 - Rotina diária de 120 minutos e timer de foco.
 - Progresso local, sincronização privada entre dispositivos e exportação/restauração de backup JSON.
-- Mapeamento de nove áreas do índice TEC, acesso externo/iframe e registro manual de sessões.
+- Índice TEC completo com 2.485 questões em nove áreas, hierarquia exportada, hiperlinks externos e registro manual de sessões.
 
 ## Executar os arquivos estáticos
 
@@ -49,11 +49,13 @@ Para desenvolver a versão completa, instale as dependências e execute `npm run
 public/
   style.css           Layout responsivo
   data.js             Aulas, questões, comentários e mapas de conteúdo
+  tec-index.js        Índice hierárquico gerado da planilha exportada pelo TEC
   app.js              Navegação, respostas, filtros e progresso
   programa-base.md    Programa integral de referência e pendências
   plano-estudos.md    Plano inicial de preparação
   analise-tec.md      Análise do caderno e limites de integração
 check.cjs             Verificações automatizadas
+scripts/import-tec-index.py  Conversor da planilha TEC para os dados do site
 ```
 
 ## Conteúdo e escopo
@@ -64,7 +66,7 @@ Esta versão oferece fundamentos e **não cobre integralmente o edital**. As que
 
 ## TEC Concursos
 
-O projeto oferece acesso ao caderno indicado e um mapeamento resumido dos grupos observados no índice. Não contém cópia do banco, dos comentários ou das estatísticas da conta TEC. A incorporação pode exigir login ou ser limitada pelo navegador/fornecedor. A plataforma não lê automaticamente respostas do iframe; sessões externas são registradas manualmente e não entram na taxa de acertos autorais.
+O projeto oferece acesso ao caderno indicado e o índice hierárquico da planilha exportada pelo usuário, com quantidade e participação de cada tópico. Os hiperlinks abrem o caderno no TEC, pois a exportação não fornece URLs específicas por assunto. O projeto não contém cópia do banco, dos comentários ou das estatísticas da conta TEC. Sessões externas são registradas manualmente e não entram na taxa de acertos autorais.
 
 ## Dados e hospedagem
 

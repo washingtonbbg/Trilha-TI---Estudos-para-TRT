@@ -1,6 +1,6 @@
 # Integração TEC e mapeamento do caderno
 
-Data: 18/10/2026. Caderno público de referência: https://www.tecconcursos.com.br/caderno/Q7ByxA — “Especifico TI”.
+Atualizado em 21/10/2026. Caderno de referência: https://www.tecconcursos.com.br/questoes/cadernos/106372942. O índice foi incorporado a partir da planilha exportada pelo usuário.
 
 ## O que foi verificado
 
@@ -20,18 +20,18 @@ O formulário com os filtros usados para criar o caderno não foi auditado integ
 
 ## Como o caderno entra na primeira versão
 
-1. Link para acesso no TEC e botão para tentar exibir o iframe enviado pelo usuário.
-2. Mapeamento resumido de grupos do índice, com alertas de aderência ao edital.
+1. Link para acesso ao caderno no TEC, repetido em cada tópico do índice para facilitar a navegação.
+2. Índice hierárquico completo da exportação, com 2.485 questões em nove áreas, quantidades, percentuais e alertas de aderência ao edital.
 3. Registro manual de assunto, quantidade e acertos, identificado como autodeclarado e separado das estatísticas autorais.
 4. Banco próprio de 24 questões autorais com análise das cinco alternativas após responder; não são questões oficiais FCC nem reproduções do TEC.
 
 Não foram importados enunciados, gabaritos, comentários, dados de professores ou resultados da conta TEC. Nenhuma credencial de login do usuário é armazenada no projeto.
 
+Cada tópico possui hiperlink para o caderno. A planilha não contém uma URL específica para cada assunto, portanto os links levam ao mesmo caderno para que o usuário localize o tópico dentro do índice do TEC.
+
 ## Limite técnico
 
-O iframe carrega uma página de outra origem. A política de mesma origem impede que a aplicação leia arbitrariamente seu DOM e suas respostas. Mensagens de redimensionamento, quando suportadas, não constituem API de resultados. A versão atual usa altura fixa e rolagem para não depender da execução de um script externo no contexto da aplicação.
-
-O TEC pode exigir login e plano e pode bloquear o quadro. Cookies de terceiros e políticas de enquadramento também podem impedir o uso. O link externo é a alternativa disponível. No teste local, o iframe carregou uma tela de login do TEC, com pedido para entrar novamente. A resolução autenticada dentro do iframe não foi confirmada nesta etapa.
+O TEC pode exigir login e plano. A aplicação usa abertura externa e não tenta ler o conteúdo autenticado, respostas ou estatísticas do usuário. A exportação recebida contém somente a hierarquia do índice, quantidades e percentuais.
 
 Uma integração completa exige verificar API ou exportação de dados documentada e escopo de autorização/licença apropriado. Nenhum mecanismo desse tipo foi confirmado. Não foram tentados endpoints privados nem reprodução do banco.
 
